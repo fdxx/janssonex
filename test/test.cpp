@@ -6,12 +6,12 @@
 #include <string.h>
 
 void printfn(const char *format, ...);
-void PrintJson(JSON *json, size_t flags = 0);
+void PrintJson(fdxx::JSON *json, size_t flags = 0);
 void Test1(char **buffer);
 void Test2(char **buffer);
 void Test3(char **buffer);
-void IterObject(JSON *root);
-void IterArray(JSON *root, const char *name);
+void IterObject(fdxx::JSON *root);
+void IterArray(fdxx::JSON *root, const char *name);
 
 
 int main(int argc, char **argv)
@@ -27,7 +27,7 @@ int main(int argc, char **argv)
 void Test1(char **buffer)
 {
 	printfn("--- json set test ---");
-	JSON *root = JSON::CreateObject();
+	fdxx::JSON *root = fdxx::JSON::CreateObject();
 
 	root->SetValue<const char*>("strKey", "str");
 	root->SetValue<int>("intKey", 1);
@@ -35,20 +35,20 @@ void Test1(char **buffer)
 	root->SetValue<bool>("boolKey", false);
 	root->SetNullValue("nullKey");
 
-	JSON *array = JSON::CreateArray();
+	fdxx::JSON *array = fdxx::JSON::CreateArray();
 	root->Set("Array", array);
 
-	JSON *object0 = JSON::CreateObject();
-	JSON *object1 = JSON::CreateObject();
+	fdxx::JSON *object0 = fdxx::JSON::CreateObject();
+	fdxx::JSON *object1 = fdxx::JSON::CreateObject();
 
 	array->Push(object0);
 	array->Push(object1);
 
-	JSON *strArray = JSON::CreateArray();
+	fdxx::JSON *strArray = fdxx::JSON::CreateArray();
 	strArray->PushValue<const char*>("str1");
 	strArray->PushValue<const char*>("str2");
 
-	JSON *intArray = JSON::CreateArray();
+	fdxx::JSON *intArray = fdxx::JSON::CreateArray();
 	intArray->PushValue<int>(1);
 	intArray->PushValue<int>(2);
 	intArray->PushValue<int>(5);
@@ -56,13 +56,13 @@ void Test1(char **buffer)
 	object0->Set("strArray", strArray);
 	object0->Set("intArray", intArray);
 
-	JSON *floatArray = JSON::CreateArray();
+	fdxx::JSON *floatArray = fdxx::JSON::CreateArray();
 	floatArray->PushValue<float>(1.1f);
 	floatArray->PushValue<float>(2.0f);
 	floatArray->PushValue<float>(5.53216111f);
 	floatArray->PushValue<float>(7.7f);
 
-	JSON *boolArray = JSON::CreateArray();
+	fdxx::JSON *boolArray = fdxx::JSON::CreateArray();
 	boolArray->PushValue<bool>(true);
 
 	object1->Set("floatArray", floatArray);
@@ -76,18 +76,18 @@ void Test1(char **buffer)
 
 void Test2(char **buffer)
 {
-	JSON *root = JSON::FromString(*buffer, JSON_INDENT(4)|JSON_REAL_PRECISION(6));
+	fdxx::JSON *root = fdxx::JSON::FromString(*buffer, JSON_INDENT(4)|JSON_REAL_PRECISION(6));
 	IterObject(root);
 	root->decref();
 }
 
-void IterObject(JSON *root)
+void IterObject(fdxx::JSON *root)
 {
 	printfn("------ IterObject ------");
 
-	JSONObjectKeys iter(root);
+	fdxx::JSONObjectKeys iter(root);
 	const char *key;
-	JSON *value;
+	fdxx::JSON *value;
 
 	while (iter.GetKeyValue(&key, &value))
 	{
@@ -114,13 +114,13 @@ void IterObject(JSON *root)
 	}
 }
 
-void IterArray(JSON *root, const char *name)
+void IterArray(fdxx::JSON *root, const char *name)
 {
 	printfn("------ IterArray %s ------", name);
 
 	for (size_t i = 0, len = root->ArrSize(); i < len; i++)
 	{
-		JSON &value = (*root)[i];
+		fdxx::JSON &value = (*root)[i];
 
 		if (json_is_object(&value))
 			IterObject(&value);
@@ -144,14 +144,14 @@ void IterArray(JSON *root, const char *name)
 
 void Test3(char **buffer)
 {
-	JSON *root = JSON::FromString(*buffer, JSON_INDENT(4)|JSON_REAL_PRECISION(6));
+	fdxx::JSON *root = fdxx::JSON::FromString(*buffer, JSON_INDENT(4)|JSON_REAL_PRECISION(6));
 
 	printfn("--- Remove boolKey Test ---");
 	root->Remove("boolKey");
 	PrintJson(root, JSON_INDENT(4)|JSON_REAL_PRECISION(6));
 
 	printfn("--- Remove intArray Test ---");
-	JSON &object0 = (*root)["Array"][0ul];
+	fdxx::JSON &object0 = (*root)["Array"][0ul];
 	object0.Remove("intArray");
 	PrintJson(root, JSON_INDENT(4)|JSON_REAL_PRECISION(6));
 
@@ -160,7 +160,7 @@ void Test3(char **buffer)
 	PrintJson(root, JSON_INDENT(4)|JSON_REAL_PRECISION(6));
 
 	printfn("--- Remove floatArray[2] Test ---");
-	JSON &floatArray = (*root)["Array"][1]["floatArray"];
+	fdxx::JSON &floatArray = (*root)["Array"][1]["floatArray"];
 	floatArray.Remove(2);
 	PrintJson(root, JSON_INDENT(4)|JSON_REAL_PRECISION(6));
 
@@ -175,7 +175,7 @@ void Test3(char **buffer)
 	PrintJson(&floatArray, JSON_INDENT(4)|JSON_REAL_PRECISION(6));
 
 	printfn("--- Copy Array Test ---");
-	JSON *Array1 = (*root)["Array"].DeepCopy();
+	fdxx::JSON *Array1 = (*root)["Array"].DeepCopy();
 	PrintJson(Array1, JSON_INDENT(4)|JSON_REAL_PRECISION(6));
 
 	printfn("--- Extend Array Test ---");
@@ -186,7 +186,7 @@ void Test3(char **buffer)
 	root->decref();
 }
 
-void PrintJson(JSON *json, size_t flags)
+void PrintJson(fdxx::JSON *json, size_t flags)
 {
 	char *str = json->ToString(flags);
 	printf("%s\n", str);

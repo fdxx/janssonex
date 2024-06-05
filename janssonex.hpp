@@ -1,5 +1,4 @@
-#ifndef INCLUDE_JANSSONEX_HPP_
-#define INCLUDE_JANSSONEX_HPP_
+#pragma once
 
 #include <cstdio>
 #include <jansson.h>
@@ -19,6 +18,8 @@ enum ObjectUpdateType
 	OU_MISSING_NEW,
 	OU_RECURSIVE
 };
+
+namespace fdxx {
 
 struct JSON : public json_t
 {
@@ -214,7 +215,7 @@ struct JSON : public json_t
 	template<typename T>
 	bool SetValue(const char *key, T value)
 	{
-		return (json_object_set_new(this, key, ::JSON::Create(value)) == 0);
+		return (json_object_set_new(this, key, JSON::Create(value)) == 0);
 	}
 
 	// Sets a null value in the object.
@@ -341,7 +342,7 @@ struct JSON : public json_t
 	template<typename T>
 	bool SetValue(size_t index, T value)
 	{
-		return (json_array_set_new(this, index, ::JSON::Create(value)) == 0);
+		return (json_array_set_new(this, index, JSON::Create(value)) == 0);
 	}
 
 	// Sets a null value in the array.
@@ -372,7 +373,7 @@ struct JSON : public json_t
 	template<typename T>
 	bool PushValue(T value)
 	{
-		return (json_array_append_new(this, ::JSON::Create(value)) == 0);
+		return (json_array_append_new(this, JSON::Create(value)) == 0);
 	}
 
 	// Pushes a null value onto the end of the array, adding a new index.
@@ -406,7 +407,7 @@ struct JSON : public json_t
 	template<typename T>
 	bool InsertValue(size_t index, T value)
 	{
-		return (json_array_insert_new(this, index, ::JSON::Create(value)) == 0);
+		return (json_array_insert_new(this, index, JSON::Create(value)) == 0);
 	}
 
 	// Inserts a null value to array at position index, 
@@ -487,5 +488,4 @@ private:
 	void *m_iter;
 };
 
-
-#endif // INCLUDE_JANSSONEX_HPP_
+} // namespace fdxx
